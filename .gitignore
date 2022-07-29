@@ -1,0 +1,7 @@
+model.pt
+notebooks/.ipynb_checkpoints
+.ipynb_checkpoints
+__pycache__
+notebooks/clip_v1_0.1_state_dict.pt
+notebooks/models
+notebooks/train/wandb
