@@ -14,7 +14,7 @@ This repository contains code to train a self-supervised learning model on chest
 Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./models/` directory.
 
 ## Running Training
-Run the following command to do CheXzero pretraining. 
+Run the following command to perform CheXzero pretraining. 
 ```bash
 python run_train.py
 ```
