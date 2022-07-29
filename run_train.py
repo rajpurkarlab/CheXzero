@@ -1,16 +1,13 @@
 import os
 import pprint
-
 import argparse
 from tqdm import tqdm
-
 
 import torch
 from torch.utils import data
 from torch import nn
 import torch.optim as optim
 from torchvision.transforms import Compose, Normalize, Resize
-
 
 import clip
 from model import CLIP
