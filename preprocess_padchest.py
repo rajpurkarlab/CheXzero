@@ -187,12 +187,13 @@ def write_h5(cxr_paths):
     labels_path = 'data/padchest/2_cxr_labels.csv'
     df_labels_new.to_csv(labels_path)
         
-# fix multi-hot labels to be in order of cxr_paths
 def order_labels(df, cxr_paths): 
+    """
+    Fixes multi-hot labels to be in order of cxr_paths
+    """
     df_new = pd.DataFrame(columns=df.columns)
     for path in cxr_paths: 
         imageId = path.split('/')[-1]
-    #     print(imageId)
         row = df.loc[df['ImageID'] == imageId]
         df_new = df_new.append(row)
     return df_new

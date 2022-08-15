@@ -78,7 +78,6 @@ def section_start(lines, section=' IMPRESSION'):
 def section_end(lines, section_start):
     num_lines = len(lines)
 
-#TODO: NEED TO CITE THAT THIS IS AKSHAYS PARSING FUNCTION
 def getIndexOfLast(l, element):
     """ Get index of last occurence of element
     @param l (list): list of elements
