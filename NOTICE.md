@@ -4,7 +4,7 @@ This software incorporates material from third parties.
 ## Project Licenses
 The source code of this repository was derived from CLIP developed by OpenAI (https://github.com/openai/CLIP). This work uses and modifies code that defines the CLIP model architecture, preprocesses unstructured text, and runs inference. 
 
-The Open Source License / Copyright Notice is included.
+### Open Source License / Copyright Notice
 ```
 MIT License
 
