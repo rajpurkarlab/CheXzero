@@ -16,7 +16,6 @@ from simple_tokenizer import SimpleTokenizer
 from train import train_main, load_data, load_clip, preprocess_text
 from zero_shot import run_cxr_zero_shot, run_zero_shot
 
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--cxr_filepath', type=str, default='data/cxr.h5', help="Directory to load chest x-ray image data from.")
@@ -129,6 +128,7 @@ def train_batch(images, texts, model, device, criterion, optimizer):
     optimizer.step()
         
     return loss
+
 def train_log(loss, example_ct, epoch):
     loss = float(loss)
     print(f"Loss after " + str(example_ct).zfill(5) + f" examples: {loss:.3f}")
@@ -136,8 +136,6 @@ def train_log(loss, example_ct, epoch):
 def save(model, path): 
     torch.save(model.state_dict(), path)
     
-
-
 if __name__ == "__main__":
     args = parse_args()
     model = model_pipeline(args)
