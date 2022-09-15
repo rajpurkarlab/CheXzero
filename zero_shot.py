@@ -235,8 +235,6 @@ def process_alt_labels(alt_labels_dict, cxr_labels):
     
     inv_labels_dict = get_inverse_labels(alt_labels_dict)
     alt_label_list = [w for w in inv_labels_dict.keys()]
-    # make all lower case
-    # todo: add cxr_labels to alt_label_list
     
     # create index map
     index_map = dict()
