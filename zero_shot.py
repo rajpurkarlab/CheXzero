@@ -6,6 +6,7 @@ import pandas as pd
 from PIL import Image
 import h5py
 import matplotlib.pyplot as plt
+from typing import List
 
 import torch
 from torch.utils import data
@@ -33,15 +34,13 @@ class CXRTestDataset(data.Dataset):
         label_path: Path to file containing labels 
         transform: PyTorch transform to apply to every data instance (default=None).
     """
-    def __init__(self, img_path, label_path, cxr_labels, transform=None, cutlabels=True):
+    def __init__(
+        self, 
+        img_path: str, 
+        transform = None, 
+    ):
         super().__init__()
         self.img_dset = h5py.File(img_path, 'r')['cxr']
-        full_labels = pd.read_csv(label_path)
-        if cutlabels: 
-            full_labels = full_labels.loc[:, cxr_labels]
-        else: 
-            full_labels.drop(full_labels.columns[0], axis=1, inplace=True)
-        self.labels = full_labels.to_numpy()
         self.transform = transform
             
     def __len__(self):
@@ -59,8 +58,7 @@ class CXRTestDataset(data.Dataset):
         if self.transform:
             img = self.transform(img)
             
-        label = torch.from_numpy(self.labels[idx])
-        sample = {'img': img, 'label': label }
+        sample = {'img': img}
     
         return sample
 
@@ -149,7 +147,6 @@ def predict(loader, model, zeroshot_weights, softmax_eval=True, verbose=0):
     with torch.no_grad():
         for i, data in enumerate(tqdm(loader)):
             images = data['img']
-            target = data['label']
 
             # predict
             image_features = model.encode_image(images) 
@@ -169,15 +166,11 @@ def predict(loader, model, zeroshot_weights, softmax_eval=True, verbose=0):
                 plt.imshow(images[0][0])
                 plt.show()
                 print('images: ', images)
-                print('target: ', target)
-
                 print('images size: ', images.size())
-                print('target size: ', target.size())
                 
                 print('image_features size: ', image_features.size())
                 print('logits: ', logits)
                 print('logits size: ', logits.size())
-                print('probs: ', probs)
          
     y_pred = np.array(y_pred)
     return np.array(y_pred)
@@ -322,7 +315,41 @@ def run_experiment(model, cxr_labels, cxr_templates, loader, y_true, alt_labels_
 
     return results, y_pred
 
-def make(model_path, cxr_filepath, final_label_path, cxr_labels, pretrained: bool = True, context_length: bool = 77, cutlabels: bool = True):
+def make_true_labels_df(
+    cxr_true_labels_path: str, 
+    cxr_labels: List[str],
+    cutlabels: bool = True
+): 
+    """
+    Loads in data containing the true binary labels
+    for each pathology in `cxr_labels` for all samples. This
+    is used for evaluation of model performance.
+
+    args: 
+        * cxr_true_labels_path - str, path to csv containing ground truth labels
+        * cxr_labels - List[str], subset of label columns to select from ground truth df 
+        * cutlabels - bool, if True, will keep columns of ground truth labels that correspond
+            with the labels inputted through `cxr_labels`. Otherwise, drop the first column and keep remaining.
+
+    Returns a numpy array of shape (# samples, # labels/pathologies)
+        representing the binary ground truth labels for each pathology on each sample.
+    """
+    # create ground truth labels
+    full_labels = pd.read_csv(cxr_true_labels_path)
+    if cutlabels: 
+        full_labels = full_labels.loc[:, cxr_labels]
+    else: 
+        full_labels.drop(full_labels.columns[0], axis=1, inplace=True)
+
+    y_true = full_labels.to_numpy()
+    return y_true
+
+def make(
+    model_path: str, 
+    cxr_filepath: str, 
+    pretrained: bool = True, 
+    context_length: bool = 77, 
+):
     """
     FUNCTION: make
     -------------------------------------------
@@ -330,24 +357,28 @@ def make(model_path, cxr_filepath, final_label_path, cxr_labels, pretrained: boo
     
     args: 
         * model_path - String for directory to the weights of the trained clip model. 
-        * pretrained - bool, whether or not model uses pretrained clip weights
         * context_length - int, max number of tokens of text inputted into the model. 
         * cxr_filepath - String for path to the chest x-ray images. 
-        * final_label_path - String for path to ground truth labels.
         * cxr_labels - Python list of labels for a specific zero-shot task. (i.e. ['Atelectasis',...])
+        * pretrained - bool, whether or not model uses pretrained clip weights
         * cutlabels - bool, if True, will keep columns of ground truth labels that correspond
         with the labels inputted through `cxr_labels`. Otherwise, drop the first column and keep remaining.
     
-    Returns model, loader, and y_true. 
+    Returns model, data loader. 
     """
     # load model
-    model = load_clip(model_path, pretrained, context_length=context_length)
+    model = load_clip(
+        model_path=model_path, 
+        pretrained=pretrained, 
+        context_length=context_length
+    )
 
     # load data
     transformations = [
         # means computed from sample in `cxr_stats` notebook
         Normalize((101.48761, 101.48761, 101.48761), (83.43944, 83.43944, 83.43944)),
     ]
+    # if using CLIP pretrained model
     if pretrained: 
         # resize to input resolution of pretrained clip model
         input_resolution = 224
@@ -355,19 +386,65 @@ def make(model_path, cxr_filepath, final_label_path, cxr_labels, pretrained: boo
     transform = Compose(transformations)
     
     # create dataset
-    torch_dset = CXRTestDataset(img_path=cxr_filepath,
-                            label_path=final_label_path, cxr_labels=cxr_labels, transform=transform, cutlabels=cutlabels)
+    torch_dset = CXRTestDataset(
+        img_path=cxr_filepath,
+        transform=transform, 
+    )
     loader = torch.utils.data.DataLoader(torch_dset, shuffle=False)
     
-    # create ground truth labels
-    full_labels = pd.read_csv(final_label_path)
-    if cutlabels: 
-        full_labels = full_labels.loc[:, cxr_labels]
-    else: 
-        full_labels.drop(full_labels.columns[0], axis=1, inplace=True)
+    return model, loader
 
-    y_true = full_labels.to_numpy()
-    return model, loader, y_true
+## Run the model on the data set using ensembled models
+def ensemble_models(
+    model_paths: List[str], 
+    cxr_filepath: str, 
+    cxr_labels: List[str], 
+    cxr_pair_template: Tuple[str], 
+    cache_dir: str = None, 
+    save_name: str = None,
+) -> Tuple[List[np.ndarray], np.ndarray]: 
+    """
+    Given a list of `model_paths`, ensemble model and return
+    predictions. Caches predictions at `cache_dir` if location provided.
+
+    Returns a list of each model's predictions and the averaged
+    set of predictions.
+    """
+
+    predictions = []
+    model_paths = sorted(model_paths) # ensure consistency of 
+    for path in model_paths: # for each model
+        model_name = Path(path).stem
+
+        # load in model and `torch.DataLoader`
+        model, loader = make(
+            model_path=path, 
+            cxr_filepath=cxr_filepath, 
+        ) 
+        
+        # path to the cached prediction
+        if cache_dir is not None:
+            if save_name is not None: 
+                cache_path = Path(cache_dir) / f"{save_name}_{model_name}.npy"
+            else: 
+                cache_path = Path(cache_dir) / f"{model_name}.npy"
+
+        # if prediction already cached, don't recompute prediction
+        if cache_dir is not None and os.path.exists(cache_path): 
+            print("Loading cached prediction for {}".format(model_name))
+            y_pred = np.load(cache_path)
+        else: # cached prediction not found, compute preds
+            print("Inferring model {}".format(path))
+            y_pred = run_softmax_eval(model, loader, cxr_labels, cxr_pair_template)
+            if cache_dir is not None: 
+                Path(cache_dir).mkdir(exist_ok=True, parents=True)
+                np.save(file=cache_path, arr=y_pred)
+        predictions.append(y_pred)
+    
+    # compute average predictions
+    y_pred_avg = np.mean(predictions, axis=0)
+    
+    return predictions, y_pred_avg
 
 def run_zero_shot(cxr_labels, cxr_templates, model_path, cxr_filepath, final_label_path, alt_labels_dict: dict = None, softmax_eval = True, context_length=77, pretrained: bool = False, use_bootstrap=True, cutlabels=True): 
     """
@@ -400,9 +477,19 @@ def run_zero_shot(cxr_labels, cxr_templates, model_path, cxr_filepath, final_lab
     
     np.random.seed(97)
     # make the model, data loader, and ground truth labels
-    model, loader, y_true = make(model_path, cxr_filepath, 
-                                 final_label_path, cxr_labels, pretrained=pretrained, context_length=context_length, cutlabels=cutlabels)
-    
+    model, loader = make(
+        model_path=model_path, 
+        cxr_filepath=cxr_filepath, 
+        pretrained=pretrained,
+        context_length=context_length
+    )
+
+    y_true = make_true_labels_df(
+        cxr_true_labels_path=final_label_path, 
+        cxr_labels=cxr_labels, 
+        cutlabels=cutlabels,
+    )
+
     # run multiphrase experiment
     results, y_pred = run_experiment(model, cxr_labels, cxr_templates, loader, y_true, 
                              alt_labels_dict=alt_labels_dict, softmax_eval=softmax_eval, context_length=context_length, use_bootstrap=use_bootstrap)
@@ -473,9 +560,11 @@ def validation_zero_shot(model_path, context_length=77, pretrained=False):
    
     results = run_zero_shot(cxr_sex_labels, cxr_sex_templates, model_path, cxr_filepath=cxr_filepath, final_label_path=sex_labels_path, softmax_eval=False, context_length=context_length, pretrained=True, use_bootstrap=True, cutlabels=False)
     pass
+
+
     
     
     
     
     
-    
+ 
