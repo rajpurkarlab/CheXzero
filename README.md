@@ -44,7 +44,7 @@ To install Python dependencies:
 4. This should preprocess the chest x-ray images into a hdf5 format used for training stored at `data/cxr.h5` and extract the impressions section as text from the corresponding chest x-ray radiology report stored at `data/mimic_impressions.csv` .
 
 ### Model Checkpoints
-Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./models/` directory.
+Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./checkpoints/chexzero_weights` directory.
 
 ## Running Training
 Run the following command to perform CheXzero pretraining. 
@@ -58,4 +58,8 @@ python run_train.py --cxr_filepath "./data/cxr.h5" --txt_filepath "data/mimic_im
 
 Use `-h` flag to see all optional arguments. 
 
+## Zero-Shot Inference
+See the following [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) for an example of how to use CheXzero to perform zero-shot inference on a chest x-ray dataset. The example shows how to output predictions from the model ensemble. 
+
+Ensure all [model checkpoints](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing) are stored in `checkpoints/chexzero_weights/`, or the `model_dir` that is specified in the notebook.
 
