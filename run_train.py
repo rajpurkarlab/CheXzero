@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--save_interval', type=int, default=100)
     parser.add_argument('--log_interval', type=int, default=10)
-    parser.add_argument('--save_dir', type=str, default="saved_models/", help="Directory to save the trained model.")
+    parser.add_argument('--save_dir', type=str, default="checkpoints/", help="Directory to save the trained model.")
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--optimizer', type=str, default="sgd")
     parser.add_argument('--momentum', type=float, default=0.9)

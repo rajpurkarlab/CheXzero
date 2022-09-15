@@ -41,10 +41,28 @@ To install Python dependencies:
 1. Navigate to [MIMIC-CXR Database](https://physionet.org/content/mimic-cxr/2.0.0/) to download the training dataset. Note: in order to gain access to the data, you must be a credentialed user as defined on [PhysioNet](https://physionet.org/settings/credentialing/). 
 2. Copy the dataset into the `data/` directory.
 3. Run `python preprocess_train_data.py`
-4. This should preprocess the chest x-ray images into a hdf5 format used for training stored at `data/cxr.h5` and extract the impressions section as text from the corresponding chest x-ray radiology report stored at `data/mimic_impressions.csv` .
+4. This should preprocess the chest x-ray images into a Hierarchical Data Format (HDF) format used for training stored at `data/cxr.h5` and extract the impressions section as text from the corresponding chest x-ray radiology report stored at `data/mimic_impressions.csv` .
+
+### Evaluation Dataset
+
+#### CheXpert Dataset
+The CheXpert dataset consists of chest radiographic examinations from Stanford Hospital, performed between October 2002
+and July 2017 in both inpatient and outpatient centers. Population-level characteristics are unavailable for the CheXpert test
+dataset, as they are used for official evaluation on the CheXpert leaderboard. 
+
+The main data (CheXpert data) supporting the results of this study are available at https://aimi.stanford.edu/chexpert-chest-x-rays.
+
+The CheXpert **test** dataset used for official evaluation is hidden from the public to maintain the integrity of the CheXpert competition. 
+
+#### PadChest Dataset
+The PadChest dataset contains chest X-rays that were interpreted by 18 radiologists at the Hospital Universitario de San Juan,
+Alicante, Spain, from January 2009 to December 2017. The dataset contains 109,931 image studies and 168,861 images.
+PadChest also contains 206,222 study reports.
+
+The [PadChest](https://arxiv.org/abs/1901.07441) is publicly available at https://bimcv.cipf.es/bimcv-projects/padchest. Those who would like to use PadChest for experimentation should request access to PadChest at the [link](https://bimcv.cipf.es/bimcv-projects/padchest). 
 
 ### Model Checkpoints
-Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./models/` directory.
+Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./checkpoints/chexzero_weights` directory.
 
 ## Running Training
 Run the following command to perform CheXzero pretraining. 
@@ -58,4 +76,21 @@ python run_train.py --cxr_filepath "./data/cxr.h5" --txt_filepath "data/mimic_im
 
 Use `-h` flag to see all optional arguments. 
 
+## Zero-Shot Inference
+See the following [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) for an example of how to use CheXzero to perform zero-shot inference on a chest x-ray dataset. The example shows how to output predictions from the model ensemble and evaluate performance of the model if ground truth labels are available.
+
+```python
+# computes a prediction for each input image stored as a np array of probabilities for each pathology
+predictions, y_pred_avg = ensemble_models(
+    model_paths=model_paths, 
+    cxr_filepath=cxr_filepath, 
+    cxr_labels=cxr_labels, 
+    cxr_pair_template=cxr_pair_template, 
+    cache_dir=cache_dir,
+)
+```
+In order to use CheXzero for zero-shot inference, ensure the following requirements are met: 
+* All input *`images`* must be stored in a single `.h5` (Hierarchical Data Format). See the [`write_h5(cxr_paths)`](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py#L155) function in [preprocess_padchest.py](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py) for an example of how to convert a list of paths to `.png` files into a valid `.h5` file. 
+* The *ground truth `labels`* must be in a `.csv` dataframe where rows represent each image sample, and each column represents the binary labels for a particular pathology on each sample.
+* Ensure all [model checkpoints](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing) are stored in `checkpoints/chexzero_weights/`, or the `model_dir` that is specified in the notebook.
 
