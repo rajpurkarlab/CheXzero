@@ -43,6 +43,24 @@ To install Python dependencies:
 3. Run `python preprocess_train_data.py`
 4. This should preprocess the chest x-ray images into a hdf5 format used for training stored at `data/cxr.h5` and extract the impressions section as text from the corresponding chest x-ray radiology report stored at `data/mimic_impressions.csv` .
 
+### Evaluation Dataset
+
+#### CheXpert Dataset
+The CheXpert dataset consists of chest radiographic examinations from Stanford Hospital, performed between October 2002
+and July 2017 in both inpatient and outpatient centers. Population-level characteristics are unavailable for the CheXpert test
+dataset, as they are used for official evaluation on the CheXpert leaderboard. 
+
+The main data (CheXpert data) supporting the results of this study are available at https://aimi.stanford.edu/chexpert-chest-x-rays.
+
+The CheXpert **test** dataset used for official evaluation is hidden from the public to maintain the integrity of the CheXpert competition. 
+
+#### PadChest Dataset
+The PadChest dataset contains chest X-rays that were interpreted by 18 radiologists at the Hospital Universitario de San Juan,
+Alicante, Spain, from January 2009 to December 2017. The dataset contains 109,931 image studies and 168,861 images.
+PadChest also contains 206,222 study reports.
+
+The [PadChest](https://arxiv.org/abs/1901.07441) is publicly available at https://bimcv.cipf.es/bimcv-projects/padchest. Those who would like to use PadChest for experimentation should request access to PadChest at the [link](https://bimcv.cipf.es/bimcv-projects/padchest). 
+
 ### Model Checkpoints
 Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at the following [link](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing). Download files and save them in the `./checkpoints/chexzero_weights` directory.
 
