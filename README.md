@@ -111,7 +111,7 @@ import eval
 
 # loads in ground truth labels into memory
 test_pred = y_pred_avg
-test_true = zero_shot.make_true_labels_df(cxr_true_labels_path=cxr_true_labels_path, cxr_labels=cxr_labels)
+test_true = zero_shot.make_true_labels(cxr_true_labels_path=cxr_true_labels_path, cxr_labels=cxr_labels)
 
 # evaluate model, no bootstrap
 cxr_results: pd.DataFrame = eval.evaluate(test_pred, test_true, cxr_labels) # eval on full test datset
