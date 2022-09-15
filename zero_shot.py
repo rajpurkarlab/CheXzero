@@ -315,7 +315,7 @@ def run_experiment(model, cxr_labels, cxr_templates, loader, y_true, alt_labels_
 
     return results, y_pred
 
-def make_true_labels_df(
+def make_true_labels(
     cxr_true_labels_path: str, 
     cxr_labels: List[str],
     cutlabels: bool = True
@@ -484,7 +484,7 @@ def run_zero_shot(cxr_labels, cxr_templates, model_path, cxr_filepath, final_lab
         context_length=context_length
     )
 
-    y_true = make_true_labels_df(
+    y_true = make_true_labels(
         cxr_true_labels_path=final_label_path, 
         cxr_labels=cxr_labels, 
         cutlabels=cutlabels,
