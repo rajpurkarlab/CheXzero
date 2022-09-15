@@ -43,9 +43,6 @@ def accuracy(output, target, topk=(1,)):
     pred = output.topk(max(topk), 1, True, True)[1].t()
     print('pred: ', pred)
     
-#     target_mod = target.topk(max(topk), 1, True, True)[1].t()
-#     target_mod = target.view(1, -1)
-#     print('target_mod: ', target_mod)
     expand = target.expand(-1, max(topk))
     print('expand: ', expand)
     
@@ -87,7 +84,6 @@ def choose_operating_point(fpr, tpr, thresholds):
             sens = _tpr
             spec = 1-_fpr
             J = _tpr - _fpr
-#     print(J)
     return sens, spec
 
 ''' PRECISION-RECALL CURVE '''
@@ -129,8 +125,6 @@ def evaluate(y_pred, y_true, cxr_labels,
     import warnings
     warnings.filterwarnings('ignore')
 
-#     print(y_pred.shape, y_true.shape)
-#     assert(y_pred.shape == y_true.shape)
     num_classes = y_pred.shape[-1] # number of total labels
     
     dataframes = []
@@ -153,10 +147,7 @@ def evaluate(y_pred, y_true, cxr_labels,
         roc_name = cxr_label + ' ROC Curve'
         fpr, tpr, thresholds, roc_auc = plot_roc(y_pred_i, y_true_i, roc_name)
         
-#         print('AUROC: '.format(cxr_labels[i]) + str(roc_auc))
         sens, spec = choose_operating_point(fpr, tpr, thresholds)
-#         print('Sensitivity: ' + str(sens))
-#         print('Specificity: ' + str(spec))
 
         results = [[roc_auc]]
         df = pd.DataFrame(results, columns=[cxr_label+'_auc'])
@@ -166,9 +157,6 @@ def evaluate(y_pred, y_true, cxr_labels,
         pr_name = cxr_label + ' Precision-Recall Curve'
         precision, recall, thresholds = plot_pr(y_pred_i, y_true_i, pr_name)
         
-#         print('\n')
-    #     p = compute_precision(test_y, test_pred)
-    #     print('Average Precision: ' + str(p))
     dfs = pd.concat(dataframes, axis=1)
     return dfs
 
@@ -239,10 +227,3 @@ def bootstrap(y_pred, y_true, cxr_labels, n_samples=1000, label_idx_map=None):
 
     boot_stats = pd.concat(boot_stats) # pandas array of evaluations for each sample
     return boot_stats, compute_cis(boot_stats)
-
-
-# def compute_mean(cis, is_auc: bool = False): 
-#     spec_labels = ["Atelectasis", "Cardiomegaly", "Consolidation", "Edema", "Pleural Effusion"]
-#     spec_df = cis[spec_labels]
-#     res = np.mean(spec_df.iloc[0])
-#     return res
