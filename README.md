@@ -2,6 +2,15 @@
 
 This repository contains code to train a self-supervised learning model on chest X-ray images that lack explicit annotations and evalute this model's performance on pathology-classification tasks.
 
+[Fig 1.pdf](https://github.com/rajpurkarlab/CheXzero/files/9576904/Fig.1.pdf)
+
+## Prerequisites
+To clone all files:
+```git clone https://github.com/rajpurkarlab/CheXzero.git```
+
+To install Python dependencies:
+```pip install -r requirements.txt```
+
 ## Data 
 ### Training Dataset
 1. Navigate to [MIMIC-CXR Database](https://physionet.org/content/mimic-cxr/2.0.0/) to download the training dataset. 
