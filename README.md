@@ -80,8 +80,10 @@ Use `-h` flag to see all optional arguments.
 See the following [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) for an example of how to use CheXzero to perform zero-shot inference on a chest x-ray dataset. The example shows how to output predictions from the model ensemble and evaluate performance of the model if ground truth labels are available.
 
 ```python
-# computes a prediction for each input image stored as a np array of probabilities for each pathology
-predictions, y_pred_avg = ensemble_models(
+import zero_shot
+
+# computes predictions for a set of images stored as a np array of probabilities for each pathology
+predictions, y_pred_avg = zero_shot.ensemble_models(
     model_paths=model_paths, 
     cxr_filepath=cxr_filepath, 
     cxr_labels=cxr_labels, 
