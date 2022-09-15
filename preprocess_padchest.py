@@ -5,6 +5,7 @@ import pandas as pd
 from PIL import Image
 import h5py
 import matplotlib.pyplot as plt
+from typing import List
 
 import torch
 from torch.utils import data
@@ -151,6 +152,47 @@ def get_paths(directory):
         else:
             continue
     return paths_list
+
+def img_to_h5(
+    cxr_paths: List[str], 
+    out_filepath: str, 
+    resolution: int = 320, 
+) -> List[str]: 
+    """
+    Converts a set of images into a single `.h5` file. 
+    
+    Args: 
+        cxr_paths: List of paths to images as `.png`
+        out_filepath: Path to store h5 file
+        resolution: image resolution
+        
+    Returns a list of cxr_paths that were successfully stored in the
+    `.h5` file. 
+    """
+    dset_size = len(cxr_paths)
+    proper_cxr_paths = []
+    with h5py.File(out_filepath,'w') as h5f:
+        img_dset = h5f.create_dataset('cxr', shape=(dset_size, resolution, resolution)) 
+
+        ctr = 0
+        for idx, path in enumerate(tqdm(cxr_paths)):
+            try: 
+                # read image using cv2
+                img = cv2.imread(path)
+                # convert to PIL Image object
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img_pil = Image.fromarray(img)
+                # preprocess
+                img = preprocess(img_pil)     
+                img_dset[ctr] = img
+                ctr += 1
+                proper_cxr_paths.append(path)
+            except: 
+                print(f"Image {ctr} failed loading...")
+                continue
+        print(h5f)
+        
+    return proper_cxr_paths
 
 def write_h5(cxr_paths):
     out_filepath = 'data/padchest/images/2_cxr_dset_sample.h5'
