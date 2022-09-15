@@ -2,11 +2,15 @@
 
 This repository contains code to train a self-supervised learning model on chest X-ray images that lack explicit annotations and evalute this model's performance on pathology-classification tasks.
 
+<img width="848" alt="Screen Shot 2022-09-15 at 10 57 16 AM" src="https://user-images.githubusercontent.com/12751529/190451160-a919b363-6005-4cd4-9633-b194392bd728.png">
+
 ## Prerequisites
 To clone all files:
+
 ```git clone https://github.com/rajpurkarlab/CheXzero.git```
 
 To install Python dependencies:
+
 ```pip install -r requirements.txt```
 
 ## Data 
