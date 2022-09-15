@@ -91,8 +91,35 @@ predictions, y_pred_avg = zero_shot.ensemble_models(
     cache_dir=cache_dir,
 )
 ```
+### Arguments
+* `model_paths: List[str]`: List of paths to all checkpoints to be used in the ensemble. To run on a single model, input a list containing a single path.
+* `cxr_filepath: str`: Path to images `.h5` file
+* `cxr_labels: List[str]`: List of pathologies to query in each image
+* `cxr_pair_templates: Tuple[str, str]`: constrasting templates used to query model (see Figure 1 in article for visual explanation). 
+* `cache_dir: str`: Directory to cache predictions of each checkpoint, use to avoid recomputing predictions. 
+
 In order to use CheXzero for zero-shot inference, ensure the following requirements are met: 
 * All input *`images`* must be stored in a single `.h5` (Hierarchical Data Format). See the [`write_h5(cxr_paths)`](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py#L155) function in [preprocess_padchest.py](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py) for an example of how to convert a list of paths to `.png` files into a valid `.h5` file. 
 * The *ground truth `labels`* must be in a `.csv` dataframe where rows represent each image sample, and each column represents the binary labels for a particular pathology on each sample.
 * Ensure all [model checkpoints](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing) are stored in `checkpoints/chexzero_weights/`, or the `model_dir` that is specified in the notebook.
 
+## Evaluation
+Given a numpy array of predictions (obtained from zero-shot inference), and a numpy array of ground truth labels, one can evaluate the performance of the model using the following code:
+```python
+import zero_shot
+import eval
+
+# loads in ground truth labels into memory
+test_pred = y_pred_avg
+test_true = zero_shot.make_true_labels_df(cxr_true_labels_path=cxr_true_labels_path, cxr_labels=cxr_labels)
+
+# evaluate model, no bootstrap
+cxr_results: pd.DataFrame = eval.evaluate(test_pred, test_true, cxr_labels) # eval on full test datset
+
+# boostrap evaluations for 95% confidence intervals
+bootstrap_results: Tuple[pd.DataFrame, pd.DataFrame] = eval.bootstrap(test_pred, test_true, cxr_labels) # (df of results for each bootstrap, df of CI)
+
+# print results with confidence intervals
+print(bootstrap_results[1])
+```
+The results are represented as a `pd.DataFrame` which can be saved as a `.csv`. 
