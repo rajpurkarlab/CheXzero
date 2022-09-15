@@ -1,5 +1,6 @@
 albumentations==1.1.0
 argparse==1.4.0
+ftfy==6.1.1
 grpcio==1.46.1
 h5py==3.1.0
 huggingface-hub==0.6.0
