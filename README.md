@@ -17,4 +17,11 @@ Run the following command to perform CheXzero pretraining.
 ```bash
 python run_train.py
 ```
-Use `-h` flag to see all arguments. 
+
+### Arguments
+* `--cxr_filepath` Directory to load chest x-ray image data from.
+* `--txt_filepath` Directory to load radiology reprot impressions text from.
+
+Use `-h` flag to see all optional arguments. 
+
+
