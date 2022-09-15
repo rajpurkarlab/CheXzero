@@ -49,7 +49,7 @@ Model checkpoints of CheXzero pre-trained on MIMIC-CXR are publicly available at
 ## Running Training
 Run the following command to perform CheXzero pretraining. 
 ```bash
-python run_train.py
+python run_train.py --cxr_filepath "./data/cxr.h5" --txt_filepath "data/mimic_impressions.csv"
 ```
 
 ### Arguments
