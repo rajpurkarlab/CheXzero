@@ -123,3 +123,11 @@ bootstrap_results: Tuple[pd.DataFrame, pd.DataFrame] = eval.bootstrap(test_pred,
 print(bootstrap_results[1])
 ```
 The results are represented as a `pd.DataFrame` which can be saved as a `.csv`. 
+
+## Issues
+Please open new issue threads specifying the issue with the codebase or report issues directly to ekintiu@stanford.edu.
+
+## Citation
+```bash
+Tiu, E., Talius, E., Patel, P. et al. Expert-level detection of pathologies from unannotated chest X-ray images via self-supervised learning. Nat. Biomed. Eng (2022). https://doi.org/10.1038/s41551-022-00936-9
+```
