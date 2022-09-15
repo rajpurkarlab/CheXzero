@@ -61,9 +61,18 @@ Use `-h` flag to see all optional arguments.
 ## Zero-Shot Inference
 See the following [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) for an example of how to use CheXzero to perform zero-shot inference on a chest x-ray dataset. The example shows how to output predictions from the model ensemble and evaluate performance of the model if ground truth labels are available.
 
-Ensure all [model checkpoints](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing) are stored in `checkpoints/chexzero_weights/`, or the `model_dir` that is specified in the notebook.
-
+```python
+# computes a prediction for each input image stored as a np array of probabilities for each pathology
+predictions, y_pred_avg = ensemble_models(
+    model_paths=model_paths, 
+    cxr_filepath=cxr_filepath, 
+    cxr_labels=cxr_labels, 
+    cxr_pair_template=cxr_pair_template, 
+    cache_dir=cache_dir,
+)
+```
 In order to use CheXzero for zero-shot inference, ensure the following requirements are met: 
-* All input *`images`* must be stored as a `.h5`. See the [`write_h5(cxr_paths)`](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py#L155) function in [preprocess_padchest.py](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py) for an example of how to convert a list of paths to `.png` files into a valid `.h5` file. 
+* All input *`images`* must be stored as a `.h5` (Hierarchical Data Format). See the [`write_h5(cxr_paths)`](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py#L155) function in [preprocess_padchest.py](https://github.com/rajpurkarlab/internal-chexzero/blob/cleanversion/preprocess_padchest.py) for an example of how to convert a list of paths to `.png` files into a valid `.h5` file. 
 * The *ground truth `labels`* must be in a `.csv` dataframe where rows represent each image sample, and each column represents the binary labels for a particular pathology on each sample.
+* Ensure all [model checkpoints](https://drive.google.com/drive/folders/19YH2EALQTbkKXdJmKm3iaK8yPi9s1xc-?usp=sharing) are stored in `checkpoints/chexzero_weights/`, or the `model_dir` that is specified in the notebook.
 
