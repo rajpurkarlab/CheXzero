@@ -126,7 +126,8 @@ The results are represented as a `pd.DataFrame` which can be saved as a `.csv`.
 
 ### CheXpert Test Dataset
 In order to replicate the results in the paper, zero-shot inference and evaluation can be performed on the now publicly available CheXpert test dataset. 
-1) Download labels at [cheXpert-test-set-labels](https://github.com/rajpurkarlab/cheXpert-test-set-labels/blob/main/groundtruth.csv) and image files from [Stanford AIMI](https://stanfordaimi.azurewebsites.net/datasets/23c56a0d-15de-405b-87c8-99c30138950c) and save in the `./data` directory in `CheXzero/`. The test dataset images should have the following directory structure: 
+1) Download labels at [cheXpert-test-set-labels](https://github.com/rajpurkarlab/cheXpert-test-set-labels/blob/main/groundtruth.csv) and image files from [Stanford AIMI](https://stanfordaimi.azurewebsites.net/datasets/23c56a0d-15de-405b-87c8-99c30138950c) and save in the `./data` directory in `CheXzero/`. The test dataset images should have the following directory structure:
+```
 data/
 ├─ CheXpert/
 │  ├─ test/
@@ -134,15 +135,15 @@ data/
 │  │  │  ├─ study1/
 │  │  │  │  ├─ view1_frontal.jpg
 │  │  ├─ .../
+```
 
 2) Run `run_preprocess.py` script with the following arguments: 
 ```bash
-python run_preprocess.py --dataset_type "chexpert" --cxr_out_path "chexpert_test.h5" --chest_x_ray_path "./data/CheXpert/test/"
+python run_preprocess.py --dataset_type "chexpert-test" --cxr_out_path "./data/chexpert_test.h5" --chest_x_ray_path "./data/CheXpert/test/"
 ```
 This should save a `.h5` version of the test datset images which can be used for evaluation. 
 
 3) Open sample zero-shot [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) and run all cells. If the directory structure is set up correctly, then all cells should run without errors.
-
 
 ## Issues
 Please open new issue threads specifying the issue with the codebase or report issues directly to ekintiu@stanford.edu.
