@@ -141,7 +141,7 @@ data/
 ```bash
 python run_preprocess.py --dataset_type "chexpert-test" --cxr_out_path "./data/chexpert_test.h5" --chest_x_ray_path "./data/CheXpert/test/"
 ```
-This should save a `.h5` version of the test datset images which can be used for evaluation. 
+This should save a `.h5` version of the test dataset images which can be used for evaluation. 
 
 3) Open sample zero-shot [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) and run all cells. If the directory structure is set up correctly, then all cells should run without errors.
 
