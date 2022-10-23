@@ -50,7 +50,7 @@ def img_to_hdf5(cxr_paths, out_filepath, resolution=320):
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img_pil = Image.fromarray(img)
                 # preprocess
-                img = preprocess(img_pil)     
+                img = preprocess(img_pil, desired_size=resolution)     
                 img_dset[idx] = img
             except: 
                 continue
