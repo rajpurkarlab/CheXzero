@@ -10,6 +10,8 @@ from tqdm import tqdm
 from PIL import Image
 import h5py
 import cv2
+from typing import *
+from pathlib import Path
 
 import torch
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
@@ -38,22 +40,28 @@ def preprocess(img, desired_size=320):
                         (desired_size-new_size[1])//2))
     return new_img
 
-def img_to_hdf5(cxr_paths, out_filepath, resolution=320): 
+def img_to_hdf5(cxr_paths: List[Union[str, Path]], out_filepath: str, resolution=320): 
+    """
+    Convert directory of images into a .h5 file given paths to all 
+    images. 
+    """
     dset_size = len(cxr_paths)
+    failed_images = []
     with h5py.File(out_filepath,'w') as h5f:
         img_dset = h5f.create_dataset('cxr', shape=(dset_size, resolution, resolution))    
         for idx, path in enumerate(tqdm(cxr_paths)):
             try: 
                 # read image using cv2
-                img = cv2.imread(path)
+                img = cv2.imread(str(path))
                 # convert to PIL Image object
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img_pil = Image.fromarray(img)
                 # preprocess
-                img = preprocess(img_pil)     
+                img = preprocess(img_pil, desired_size=resolution)     
                 img_dset[idx] = img
-            except: 
-                continue
+            except Exception as e: 
+                failed_images.append((path, e))
+    print(f"{len(failed_images)} / {len(cxr_paths)} images failed to be added to h5.", failed_images)
 
 def get_files(directory):
     files = []
