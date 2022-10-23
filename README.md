@@ -52,7 +52,7 @@ dataset, as they are used for official evaluation on the CheXpert leaderboard.
 
 The main data (CheXpert data) supporting the results of this study are available at https://aimi.stanford.edu/chexpert-chest-x-rays.
 
-The CheXpert **test** dataset used for official evaluation is hidden from the public to maintain the integrity of the CheXpert competition. 
+The CheXpert **test** dataset has recently been made public, and can be found by following the steps in the [cheXpert-test-set-labels](https://github.com/rajpurkarlab/cheXpert-test-set-labels) repository. 
 
 #### PadChest Dataset
 The PadChest dataset contains chest X-rays that were interpreted by 18 radiologists at the Hospital Universitario de San Juan,
@@ -123,6 +123,27 @@ bootstrap_results: Tuple[pd.DataFrame, pd.DataFrame] = eval.bootstrap(test_pred,
 print(bootstrap_results[1])
 ```
 The results are represented as a `pd.DataFrame` which can be saved as a `.csv`. 
+
+### CheXpert Test Dataset
+In order to replicate the results in the paper, zero-shot inference and evaluation can be performed on the now publicly available CheXpert test dataset. 
+1) Download labels at [cheXpert-test-set-labels](https://github.com/rajpurkarlab/cheXpert-test-set-labels/blob/main/groundtruth.csv) and image files from [Stanford AIMI](https://stanfordaimi.azurewebsites.net/datasets/23c56a0d-15de-405b-87c8-99c30138950c) and save in the `./data` directory in `CheXzero/`. The test dataset images should have the following directory structure:
+```
+data/
+├─ CheXpert/
+│  ├─ test/
+│  │  ├─ patient64741/
+│  │  │  ├─ study1/
+│  │  │  │  ├─ view1_frontal.jpg
+│  │  ├─ .../
+```
+
+2) Run `run_preprocess.py` script with the following arguments: 
+```bash
+python run_preprocess.py --dataset_type "chexpert-test" --cxr_out_path "./data/chexpert_test.h5" --chest_x_ray_path "./data/CheXpert/test/"
+```
+This should save a `.h5` version of the test datset images which can be used for evaluation. 
+
+3) Open sample zero-shot [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) and run all cells. If the directory structure is set up correctly, then all cells should run without errors.
 
 ## Issues
 Please open new issue threads specifying the issue with the codebase or report issues directly to ekintiu@stanford.edu.

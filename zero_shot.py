@@ -6,7 +6,7 @@ import pandas as pd
 from PIL import Image
 import h5py
 import matplotlib.pyplot as plt
-from typing import List
+from typing import List, Tuple
 
 import torch
 from torch.utils import data
