@@ -183,7 +183,7 @@ def img_to_h5(
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img_pil = Image.fromarray(img)
                 # preprocess
-                img = preprocess(img_pil)     
+                img = preprocess(img_pil, desired_size=resolution)     
                 img_dset[ctr] = img
                 ctr += 1
                 proper_cxr_paths.append(path)
@@ -194,9 +194,8 @@ def img_to_h5(
         
     return proper_cxr_paths
 
-def write_h5(cxr_paths):
+def write_h5(cxr_paths, resolution: int = 320):
     out_filepath = 'data/padchest/images/2_cxr_dset_sample.h5'
-    resolution = 320
     dset_size = len(cxr_paths)
 
     proper_cxr_paths = []
@@ -213,7 +212,7 @@ def write_h5(cxr_paths):
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img_pil = Image.fromarray(img)
                 # preprocess
-                img = preprocess(img_pil)     
+                img = preprocess(img_pil, desired_size=resolution)     
                 plt.imshow(img)
                 img_dset[ctr] = img
                 ctr += 1
