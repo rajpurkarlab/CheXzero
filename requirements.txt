@@ -9,7 +9,7 @@ joblib==1.0.1
 matplotlib==3.3.4
 numpy==1.19.5
 opencv-python==4.5.3.56
-opencv-python-headless==4.1.2.30
+opencv-python-headless
 pandas==1.2.1
 pathlib==1.0.1
 plotly==5.9.0

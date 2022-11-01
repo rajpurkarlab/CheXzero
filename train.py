@@ -39,7 +39,7 @@ class CXRDataset(data.Dataset):
             self.img_dset = h5py.File(img_path, 'r')['cxr_unprocessed'][:size]
             self.txt_dset = pd.read_csv(txt_path)[column][:size]
         else: 
-            self.img_dset = h5py.File(img_path, 'r')['cxr_unprocessed']
+            self.img_dset = h5py.File(img_path, 'r')['cxr']
             self.txt_dset = pd.read_csv(txt_path)[column]
         self.transform = transform
             

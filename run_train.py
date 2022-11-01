@@ -108,7 +108,7 @@ def train(model, loader, device, criterion, optimizer, config):
 def train_batch(images, texts, model, device, criterion, optimizer):
     images, texts = images.to(device), texts.to(device)
     
-    # Forward pass ➡
+    # Forward pass
     logits_per_image, logits_per_text = model(images, texts)
     
     # Create labels

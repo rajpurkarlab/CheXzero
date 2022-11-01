@@ -33,9 +33,3 @@ if __name__ == "__main__":
         assert(len(cxr_paths) == 500)
        
         img_to_hdf5(cxr_paths, args.cxr_out_path)
-        
-        
-        
-    
-
-
