@@ -67,7 +67,7 @@ def load_clip(model_path, pretrained=False, context_length=77):
     FUNCTION: load_clip
     ---------------------------------
     """
-    device = torch.device("cpu")
+    device = torch.device("cuda:0")
     if pretrained is False: 
         # use new model params
         params = {
@@ -86,11 +86,12 @@ def load_clip(model_path, pretrained=False, context_length=77):
         model = CLIP(**params)
     else: 
         model, preprocess = clip.load("ViT-B/32", device=device, jit=False) 
-    try: 
-        model.load_state_dict(torch.load(model_path, map_location=device))
-    except: 
-        print("Argument error. Set pretrained = True.", sys.exc_info()[0])
-        raise
+        try: 
+            print(model_path,"using an online model  ")
+            model=torch.load(model_path).to(device)
+        except: 
+            print("Argument error. Set pretrained = True.", sys.exc_info()[0])
+            raise
     return model
 
 def zeroshot_classifier(classnames, templates, model, context_length=77):
