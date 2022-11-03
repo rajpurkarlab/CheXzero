@@ -25,30 +25,33 @@ sys.path.append('data/padchest')
 
 from data_process import * 
 
-
+FOLDER_NO = 44
 
 def preprocess_data(data_root):
     labels_path = os.path.join(data_root, 
                             'PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv')
     labels = pd.read_csv(labels_path)
     # get filepaths of 2.zip images
-    text_file_path = os.path.join(data_root, '2.zip.unzip-l.txt')
+    text_file_path = os.path.join(data_root, f'{FOLDER_NO}.zip.unzip-l.txt')
     image_paths = extract_filenames(text_file_path)
     labels_2_df = labels[labels['ImageID'].isin(image_paths)]
     unique_labels = get_unique_labels(labels_2_df)
     # multi hot encoding for labels
-    df_lab = create_multi_hot_labels(labels_2_df, unique_labels)
-    
+    df_lab = create_multi_hot_labels(labels_2_df, unique_labels)    
     loc_2_df = labels[labels['ImageID'].isin(image_paths)]
     loc_col_2 = loc_2_df.loc[:, "Labels"] 
+
     # multihot encoding for localizations
     unique_loc = get_unique_labels(loc_2_df, column="Labels")
-    df_loc = create_multi_hot_labels(loc_2_df, unique_loc, column="Labels")
-    directory = 'data/padchest/images/'
+    df_loc = create_multi_hot_labels(loc_2_df, unique_loc, column="Labels")    
+    directory = f'{data_root}/{FOLDER_NO}'
     cxr_paths = get_paths(directory)
-    write_h5(cxr_paths)
-    unique_labels = np.load('unique_labels.npy')
-    return unique_labels[0:1]
+
+    print(cxr_paths)
+    write_h5(cxr_paths, df_lab)
+    # unique_labels = np.load('unique_labels.npy')
+    # return unique_labels[0:1]
+    return unique_loc[0:1]
 
 def extract_filenames(txt_path): 
     """
@@ -131,8 +134,8 @@ def create_multi_hot_labels(labels_df, unique_labels_list, column='Labels'):
                     count_dict[processed_label] = 1
             
             dict_list.append(count_dict)
-        except: 
-            print("error when creating labels for this img.")
+        except Exception as e: 
+            print("error when creating labels for this img.", e)
             continue
         
     multi_hot_labels_df = pd.DataFrame(dict_list, columns=(['ImageID'] + unique_labels_list))
@@ -194,7 +197,7 @@ def img_to_h5(
         
     return proper_cxr_paths
 
-def write_h5(cxr_paths, resolution: int = 320):
+def write_h5(cxr_paths, df_lab, resolution: int = 320):
     out_filepath = 'data/padchest/images/2_cxr_dset_sample.h5'
     dset_size = len(cxr_paths)
 
@@ -217,8 +220,8 @@ def write_h5(cxr_paths, resolution: int = 320):
                 img_dset[ctr] = img
                 ctr += 1
                 proper_cxr_paths.append(path)
-            except: 
-                print("failed!")
+            except Exception as e: ks
+                print("failed!", e)
                 continue
         print(h5f)
     np.save("proper_cxr_paths.npy", np.array(proper_cxr_paths))
@@ -238,3 +241,12 @@ def order_labels(df, cxr_paths):
         row = df.loc[df['ImageID'] == imageId]
         df_new = df_new.append(row)
     return df_new
+
+def main():
+    root = sys.argv[1]
+    root = '../AllRawData/padchest/'
+    preprocess_data(root)
+
+if __name__ == '__main__':
+    main()
+
