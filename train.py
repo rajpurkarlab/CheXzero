@@ -54,6 +54,8 @@ class CXRDataset(data.Dataset):
         img = np.expand_dims(img, axis=0)
         img = np.repeat(img, 3, axis=0)
         txt = self.txt_dset[idx] # python str
+        if type(txt) == type(float("nan")): # capture the case of empty "Impression" sections
+            txt = " "
 
         img = torch.from_numpy(img) # torch, (3, 320, 320)
         if self.transform:
