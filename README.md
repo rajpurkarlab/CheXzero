@@ -79,6 +79,8 @@ Use `-h` flag to see all optional arguments.
 ## Zero-Shot Inference
 See the following [notebook](https://github.com/rajpurkarlab/CheXzero/blob/main/notebooks/zero_shot.ipynb) for an example of how to use CheXzero to perform zero-shot inference on a chest x-ray dataset. The example shows how to output predictions from the model ensemble and evaluate performance of the model if ground truth labels are available.
 
+See the *Examples* selection below to see how to run zero-shot inference on various chest x-ray datsets. 
+
 ```python
 import zero_shot
 
@@ -123,6 +125,32 @@ bootstrap_results: Tuple[pd.DataFrame, pd.DataFrame] = eval.bootstrap(test_pred,
 print(bootstrap_results[1])
 ```
 The results are represented as a `pd.DataFrame` which can be saved as a `.csv`. 
+
+## Examples
+### PadChest Test Dataset
+This section outlines how to replicate results demonstrated on the PadChest dataset. 
+
+#### Download Data
+The [PadChest](https://arxiv.org/abs/1901.07441) is publicly available at https://bimcv.cipf.es/bimcv-projects/padchest. Those who would like to use PadChest for experimentation should request access to PadChest at the [link](https://bimcv.cipf.es/bimcv-projects/padchest). 
+
+The instructions for processing the dataset are detailed below: 
+1) Create a folder in `data` called `padchest` (path should be `data/padchest`. Download all files into local machine to `data/padchest` path using the methods suggested by the PadChest authors (i.e. WinSCP, cadaver, etc.). 
+
+2) Notice that PadChest has split the images into ~50 zip files. In this step, we will move all images that were annotated by Physicians into a separate folder. Create this subfolder in `data/padchest` called `manual-images`, and unzip the following folder ids into `data/padchest/manual-images`:
+```0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 54```
+After this step is completed, `manual-images` should have 41,823 images (~23GB of data). 
+
+3) To uncompress the labels file, `PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv.gz`, run the following command in `data/padchest`. 
+``` bash
+gzip -d PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv.gz
+```
+This should create an uncompressed file called `PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv`. 
+
+4) To complete data pre-processing, run the following command
+``` bash
+python run_preprocess.py --csv_out_path "data/padchest/multi_hot_labels.csv" --cxr_out_path "data/padchest/dset_images.h5" --dataset_type "padchest" --chest_x_ray_path "data/padchest/manual-images"
+```
+The command above should create an `.h5` file at `data/padchest/dset_images.h5` containing all PadChest images stored in `manual-images` that were annotated by a physician, as well as a labels file at `data/padchest/multi_hot_labels.csv` which should be used as the `cxr_filepath` and `cxr_labels` in the zero-shot evaluation step respectively. 
 
 ### CheXpert Test Dataset
 In order to replicate the results in the paper, zero-shot inference and evaluation can be performed on the now publicly available CheXpert test dataset. 
