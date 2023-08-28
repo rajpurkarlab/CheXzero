@@ -36,10 +36,10 @@ class CXRDataset(data.Dataset):
     def __init__(self, img_path, txt_path, column='report', size=None, transform=None):
         super().__init__()
         if size != None: 
-            self.img_dset = h5py.File(img_path, 'r')['cxr_unprocessed'][:size]
+            self.img_dset = h5py.File(img_path, 'r')['cxr'][:size]
             self.txt_dset = pd.read_csv(txt_path)[column][:size]
         else: 
-            self.img_dset = h5py.File(img_path, 'r')['cxr_unprocessed']
+            self.img_dset = h5py.File(img_path, 'r')['cxr']
             self.txt_dset = pd.read_csv(txt_path)[column]
         self.transform = transform
             
